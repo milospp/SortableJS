@@ -14,6 +14,13 @@ function SwapPlugin() {
 	}
 
 	Swap.prototype = {
+		dragLeave() {
+			let el = this.sortable.el,
+			options = this.options;
+			swapValidEl && toggleClass(swapValidEl, options.swapClass, false);
+			swapValidEl = null;
+
+		},
 		dragOver({ activeSortable, target, dragEl, onMove, completed, cancel }) {
 			let el = this.sortable.el,
 				options = this.options;

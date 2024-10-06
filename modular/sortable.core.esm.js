@@ -1053,6 +1053,7 @@ function Sortable(el, options) {
   if (this.nativeDraggable) {
     on(el, 'dragover', this);
     on(el, 'dragenter', this);
+    on(el, 'dragleave', this);
   }
   sortables.push(this.el);
 
@@ -1935,6 +1936,10 @@ Sortable.prototype = /** @lends Sortable.prototype */{
     }
     this._nulling();
   },
+  _onLeave: function ( /**Event*/evt) {
+    console.log("AUKEJ");
+    pluginEvent('dragLeave', this, {});
+  },
   _nulling: function () {
     pluginEvent('nulling', this);
     rootEl = dragEl = parentEl = ghostEl = nextEl = cloneEl = lastDownEl = cloneHidden = tapEvt = touchEvt = moved = newIndex = newDraggableIndex = oldIndex = oldDraggableIndex = lastTarget = lastDirection = putSortable = activeGroup = Sortable.dragged = Sortable.ghost = Sortable.clone = Sortable.active = null;
@@ -1948,6 +1953,11 @@ Sortable.prototype = /** @lends Sortable.prototype */{
       case 'drop':
       case 'dragend':
         this._onDrop(evt);
+        break;
+      case 'dragleave':
+        if (!evt.relatedTarget || !evt.currentTarget.contains(evt.relatedTarget)) {
+          this._onLeave(evt);
+        }
         break;
       case 'dragenter':
       case 'dragover':
@@ -2053,6 +2063,7 @@ Sortable.prototype = /** @lends Sortable.prototype */{
     if (this.nativeDraggable) {
       off(el, 'dragover', this);
       off(el, 'dragenter', this);
+      off(el, 'dragleave', this);
     }
     // Remove draggable attributes
     Array.prototype.forEach.call(el.querySelectorAll('[draggable]'), function (el) {
@@ -2596,6 +2607,12 @@ function SwapPlugin() {
     };
   }
   Swap.prototype = {
+    dragLeave() {
+      let el = this.sortable.el,
+        options = this.options;
+      swapValidEl && toggleClass(swapValidEl, options.swapClass, false);
+      swapValidEl = null;
+    },
     dragOver({
       activeSortable,
       target,

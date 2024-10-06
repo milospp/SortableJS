@@ -433,6 +433,7 @@ function Sortable(el, options) {
 	if (this.nativeDraggable) {
 		on(el, 'dragover', this);
 		on(el, 'dragenter', this);
+		on(el, 'dragleave', this);
 	}
 
 	sortables.push(this.el);
@@ -1507,6 +1508,12 @@ Sortable.prototype = /** @lends Sortable.prototype */ {
 		this._nulling();
 	},
 
+	_onLeave: function (/**Event*/evt) {
+		console.log("AUKEJ");
+		pluginEvent('dragLeave', this, {});
+		
+	},
+
 	_nulling: function() {
 		pluginEvent('nulling', this);
 
@@ -1552,6 +1559,13 @@ Sortable.prototype = /** @lends Sortable.prototype */ {
 			case 'drop':
 			case 'dragend':
 				this._onDrop(evt);
+				break;
+			case 'dragleave':
+				if (!evt.relatedTarget || !evt.currentTarget.contains(evt.relatedTarget)) {
+
+					this._onLeave(evt)
+				  }
+				
 				break;
 
 			case 'dragenter':
@@ -1680,6 +1694,7 @@ Sortable.prototype = /** @lends Sortable.prototype */ {
 		if (this.nativeDraggable) {
 			off(el, 'dragover', this);
 			off(el, 'dragenter', this);
+			off(el, 'dragleave', this);
 		}
 		// Remove draggable attributes
 		Array.prototype.forEach.call(el.querySelectorAll('[draggable]'), function (el) {
